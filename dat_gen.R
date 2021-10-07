@@ -37,7 +37,7 @@ h_0_f = function(n = rep(5, 5), m = NULL, dist = "norm", corstruct = "independen
              }
            },
            wild = {
-             
+
              l = list()
              for(i in 1:length(n)){
                l[[i]] = list()
@@ -56,33 +56,15 @@ h_0_f = function(n = rep(5, 5), m = NULL, dist = "norm", corstruct = "independen
                }
              }
            }
-           
-           
+
+
            )
-    
+
   return(l)
 }
 
-  # How make correlation within clusters?
-  # number of Samples nn = 3, 5, 10, 25
-  # Identical Sample Size n_i = 3, 5, 10, 15, 25, 50, 100, 1000
 
-      # Identical Cluster Size m_ij = 3, 5, 10, 15, 20, 25, 40
-
-      # One Large, One Small Cluster m_ij = 10, 15, 20, 25; m_ik = 3; m_ih = 40
-
-  # One Large, One Small Sample n_i = 10, 15, 25, 50; n_j = 3; n_k = 150
-
-      # Identical Cluster Size m_ij = 3, 5, 10, 15, 20, 25, 40
-
-      # One Large, One Small Cluster m_ij = 10, 15, 20, 25; m_ik = 3; m_ih = 40
-
-  n_is = c(3, 5, 10, 15, 25, 50)
-  m_is = c(3, 5, 10, 15, 20, 25, 40)
-  nm   = expand.grid(n_is, m_is)
-  colnames(nm) = c("n_i", "m_ij")
-
-  nm_gen = function(nn, n_i, m_ij, each_s = F, both_s = T, identical_s = T, identical_c = T){
+nm_gen = function(nn, n_i, m_ij, each_s = F, both_s = T, identical_s = T, identical_c = T){
                                   # each_s: Does each sample contain large/small cluster?
                                   # both_s: Does a sample contain both large/small or only one?
                                   # identical_s: Identical Sample Sizes?

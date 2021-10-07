@@ -82,10 +82,10 @@ kappa = function(psi, i, j){
 }
 
 g = function(n){
-  n
+  sum(sapply(n, length()))
 }
 
-sigma_est = function(n, data, theta, psi){
+sigma_est = function(n, data, theta, psi = NULL){
     A = list()
     d = length(data)
     ind = c(1:d)
