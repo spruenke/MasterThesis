@@ -23,9 +23,6 @@ f_psi = function(x, i, data, psi = NULL){
 }
 
 
-data_x = list(a = list(rnorm(20), rnorm(40)), b = list(rnorm(10), rnorm(20)), d = list(rnorm(20), rnorm(20)))
-
-
 f_theta = function(x, data, theta = NULL, psi = NULL){
   if(is.null(theta)) theta = 1/length(data)
   if(is.null(psi)){
@@ -117,7 +114,6 @@ sigma_est = function(n, data, theta, psi = NULL){
     for(i in 1:d){
       A_bar[[i]] = numeric(d)
       for(s in 1:d){
-        #A_bar[[i]][s] = 0
         for(j in 1:length(A[[i]])){
             A_bar[[i]][s] = A_bar[[i]][s] + A[[i]][[j]][s] * psi[[i]][j]
         }

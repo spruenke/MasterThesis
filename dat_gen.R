@@ -1,4 +1,4 @@
-if(!("copula" %in% installed.packages())) install.packages("copula", dependencies = T)
+
 library(copula)
 # Data Generation ---------------------------------------------------------
 h_0_f = function(n = rep(5, 5), m = NULL, dist = "norm", corstruct = "independent", rho = NULL, rho.max = NULL, params = list(mean = 0, sd = 1)){

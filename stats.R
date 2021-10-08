@@ -1,5 +1,4 @@
-if(!("MASS" %in% installed.packages())) install.packages("MASS", dependencies = T)
-if(!("mvtnorm" %in% installed.packages())) install.packages("mvtnorm", dependencies = T)
+
 library(MASS)
 library(mvtnorm)
 
