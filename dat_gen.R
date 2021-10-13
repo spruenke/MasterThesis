@@ -13,7 +13,7 @@ h_0_f = function(n = rep(5, 5), m = NULL, dist = "norm", corstruct = "independen
                for(i in 1:length(n)){
                  l[[i]] = list()
                  for(j in 1:length(m[[i]])){
-                   l[[i]][[j]] = do.call(paste0("r", dist), c(m[[i]][j], params))
+                   l[[i]][[j]] = do.call(paste0("r", dist), c(m[[i]][j], (params)))
                  }
                }
            },

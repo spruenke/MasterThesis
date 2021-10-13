@@ -23,6 +23,7 @@ f_psi = function(x, i, data, psi = NULL){
 }
 
 
+
 f_theta = function(x, data, theta = NULL, psi = NULL){
   if(is.null(theta)) theta = 1/length(data)
   if(is.null(psi)){
@@ -34,7 +35,7 @@ f_theta = function(x, data, theta = NULL, psi = NULL){
   res = numeric(length(x))
   if(length(x) > 1){
       for(j in 1:length(x)){
-        ab = numeric(length(theta))
+        ab = numeric(length(data))
         for(i in 1:length(data)){
           ab[i] = f_psi(x[j], i, data, psi[[i]])
         }
@@ -68,18 +69,17 @@ rel_eff = function(data, theta = NULL, psi = NULL){
   return(p)
 }
 
-rel_eff(data_x)
 
 Y = function(a, b, s, data, psi){
       mean(f_psi(data[[a]][[b]], s, data, psi = psi))
 }
 
 kappa = function(psi, i, j){
-  return(1 - 2*psi[[i]][j] + sum(psi[[i]][j]^2))
+  return(1 - 2*psi[[i]][j] + sum(psi[[i]]^2))
 }
 
 g = function(n){
-  sum(sapply(n, length()))
+  sum(sapply(n, length))
 }
 
 sigma_est = function(n, data, theta, psi = NULL){

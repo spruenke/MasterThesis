@@ -23,7 +23,7 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type){
 
         c_mat = contrMat(sizes[[1]], type = c_type) %*% diag(1, length(sizes[[1]]))
         dec = matrix(0, nrow = 3, ncol = nsim)
-        theta = 1/sets$nn
+        theta = rep(1/sets$nn, length(sizes[[1]]))
         for(a in 1:nsim){
           data_n = h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "independent", rho = settings$rho[z], params = dist_params)
           p_hat  = rel_eff(data_n)
@@ -34,6 +34,7 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type){
         }
         settings[,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
         settings$f_2[z] = f2
+        print(paste0("No: ", z))
       }
 
     results[[1]] = settings
@@ -70,6 +71,7 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type){
       }
       settings[,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
       settings$f_2[z] = f2
+      print(paste0("Mild ", z))
     }
 
     results[[2]] = settings
@@ -106,6 +108,7 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type){
         }
         settings[,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
         settings$f_2[z] = f2
+        print(paste0("Severe: ", z))
 
       }
 
