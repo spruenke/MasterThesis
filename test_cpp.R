@@ -46,10 +46,22 @@ theta = rep(1/sets$nn, length(sizes[[1]]))
 
 data_n = h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "independent", rho = settings$rho[z], params = dist_params)
 
-A_1 = sigma_est_p(sizes[[1]], data_n, theta = theta, psi = NULL)
+f_theta_p(c(0.2, 0.4), data_n)
+f_theta_p2(c(0.2, 0.4), data_n)
 
+rel_eff(data_n)
+rel_eff_p(data_n)
+rel_eff_p2(data_n)
+
+A_1 = sigma_est(sizes[[1]], data_n, theta = theta, psi = NULL)
+A_2 = sigma_est_p2(sizes[[1]], data_n, theta = theta, psi = NULL)
 # C++ vs R ----------------------------------------------------------------
 
+q_anova(sizes[[1]], data_n, c_mat, f2, theta = NULL, psi = NULL, alpha = 0.05)
+q_wald(sizes[[1]], data_n, c_mat, theta = NULL, psi = NULL, alpha = 0.05)
+
+Q_anova(rel_eff(data_n), A_1, c_mat, f2, sizes[[1]], 0.05)
+Q_wald(rel_eff(data_n), A_1, c_mat, sizes[[1]], 0.05)
 # sigma_est
 # Q_Wald
 # Q_Anova

@@ -29,6 +29,8 @@ Rcpp::NumericVector f_psi_cpp(Rcpp::NumericVector x, Rcpp::List data, Rcpp::Nume
     return res;
 }
 
+
+
 double f_psi_cpp2(double x, Rcpp::List data, Rcpp::NumericVector psi){
   Rcpp::NumericVector m(data.length());
   for(int j = 0; j < m.length(); j++){
@@ -150,35 +152,34 @@ arma::mat sigma_est_cpp(Rcpp::List n, Rcpp::List data, Rcpp::NumericVector theta
 
 // [[Rcpp::export]]
 Rcpp::List sigma_est_cpp2(Rcpp::NumericVector n, Rcpp::List data, Rcpp::NumericVector theta, Rcpp::List psi){
-  int d = data.length();
-  Rcpp::IntegerVector ind = Rcpp::seq(0, (d-1));
+  int d = n.length();
+  arma::vec ind = arma::regspace(0, (d-1));
   Rcpp::List A(d);
   for(int i = 0; i < d; i++){
     int nii = n[i];
     Rcpp::List sublist(nii);
     Rcpp::List subdat = data[i];
+    Rcpp::NumericVector psi_i = psi[i];
     for(int j = 0; j < nii; j++){
       Rcpp::NumericVector subvec(d);
       Rcpp::NumericVector subdat_j = subdat[j];
       for(int s = 0; s < d; s++){
-        // if(s == i){
-        //   Rcpp::IntegerVector s_new = s;
-        //   Rcpp::IntegerVector cc = Rcpp::match(s_new, ind) - 1;
-        //   int cc_new = cc[0];
-        //   Rcpp::IntegerVector ind_new = clone(ind);
-        //   ind_new.erase(cc_new);
-          //for(int hh = 0; hh < ind_new.length(); hh++){
-          //  int h = ind_new[hh];
-          //  subvec[s] += theta[h] * mean(f_psi_cpp(subdat_j, data[h], psi[i]));
-          //}
-        //} //else {
-          subvec[s] = (-1) * theta[i]; // * mean(f_psi_cpp(subdat_j, data[s], psi[i]));
-        //}
-      }
+          if(s == i){
+            arma::uvec ind_new = arma::find(ind != s);
+           for(unsigned int hh = 0; hh < ind_new.n_elem; hh++){
+             unsigned int h = ind_new(hh);
+             Rcpp::List dat_h = data[h];
+             subvec[s] += theta[h] * mean(f_psi_cpp(subdat_j, dat_h, psi_i));
+           }
+         } else {
+           subvec[s] = (-1) * theta[i] * mean(f_psi_cpp(subdat_j, data[s], psi_i));
+         }
+       }
       sublist(j) = subvec;
     }
     A(i) = sublist;
   }
   return A;
 }
+
 

@@ -82,7 +82,8 @@ g = function(n){
   sum(sapply(n, length))
 }
 
-sigma_est = function(n, data, theta, psi = NULL){
+sigma_est = function(n, data, theta = NULL, psi = NULL){
+    if(is.null(theta)) theta = rep(1/length(data), length(data))
     A = list()
     d = length(data)
     ind = c(1:d)

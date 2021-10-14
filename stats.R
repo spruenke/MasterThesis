@@ -16,7 +16,7 @@ Q_anova = function(p, Sigma, cont, f_2, n, alpha){
   df   = c(sum(diag(M%*%Sigma))^2 / sum(diag(M%*%Sigma%*%M%*%Sigma)), f_2)
   pv   = 1 - pf(stat, df[1], df[2])
   dec  = pv < alpha
-  return(list(Statistic = stat, df = df, p.value = pv, reject = dec))
+  return(list(Statistic = stat, df = df, p.value = pv, reject = dec, nen = sum(diag(M%*%Sigma))))
 }
 
 max_T  = function(p, Sigma, p_null = 0.5, cont, n, normal = FALSE, alpha){
