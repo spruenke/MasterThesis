@@ -1,8 +1,18 @@
 library(multcomp)
+library(doParallel)
+library(foreach)
+library(rankCluster)
+
 sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type){
 
+    # Prepare Parallelization -------------------------------------------------
 
-    results = list()
+    cores=detectCores()
+    cl <- makeCluster(cores-1) #not to overload your computer
+
+    registerDoParallel(cl)
+
+      results = list()
 
     # No Correlation ----------------------------------------------------------
 
@@ -24,13 +34,17 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type){
         c_mat = contrMat(sizes[[1]], type = c_type) %*% diag(1, length(sizes[[1]]))
         dec = matrix(0, nrow = 3, ncol = nsim)
         theta = rep(1/sets$nn, length(sizes[[1]]))
-        for(a in 1:nsim){
+        #for(a in 1:nsim){
+        dec = foreach(a = 1:nsim, .combine = "cbind", .packages = c("rankCluster")) %do% {
           data_n = h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "independent", rho = settings$rho[z], params = dist_params)
-          p_hat  = rel_eff(data_n)
-          sigma_hat = sigma_est(sizes[[1]], data_n, theta = theta, psi = NULL)
-          dec[1,a] = Q_wald(p_hat, sigma_hat, c_mat, sizes[[1]], 0.05)$reject
-          dec[2,a] = Q_anova(p_hat, sigma_hat, c_mat, f2, sizes[[1]], 0.05)$reject
-          dec[3,a] = max_T(p_hat, sigma_hat, p_null = 0.5, c_mat, sizes[[1]], normal = F, 0.05)$reject
+          #p_hat  = rel_eff(data_n)
+          #sigma_hat = sigma_est(sizes[[1]], data_n, theta = theta, psi = NULL)
+          # dec[1,a] = q_wald(sizes[[1]], data_n, c_mat, theta = theta, psi = NULL, alpha = 0.05)$reject
+          # dec[2,a] = q_anova(sizes[[1]], data_n, c_mat, f2, theta = theta, psi = NULL, alpha = 0.05)$reject
+          # dec[3,a] = max_T(data_n, p_null = 0.5, c_mat, sizes[[1]], normal = F, 0.05, theta = theta, psi = NULL)$reject
+          c(rankCluster::q_wald(sizes[[1]], data_n, c_mat, theta = theta, psi = NULL, alpha = 0.05)$reject,
+          rankCluster::q_anova(sizes[[1]], data_n, c_mat, f2, theta = theta, psi = NULL, alpha = 0.05)$reject,
+          rankCluster::max_T(sizes[[1]], data_n, p_null = 0.5, c_mat, normal = F, 0.05, theta = theta, psi = NULL)$reject)
         }
         settings[,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
         settings$f_2[z] = f2
@@ -60,14 +74,18 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type){
 
       c_mat = contrMat(sizes[[1]], type = c_type) %*% diag(1, length(sizes[[1]]))
       dec = matrix(0, nrow = 3, ncol = nsim)
-      theta = 1/sets$nn
-      for(a in 1:nsim){
-          data_n = h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "exchangeable", rho = settings$rho[z], params = dist_params)
-          p_hat  = rel_eff(data_n)
-          sigma_hat = sigma_est(sizes[[1]], data_n, theta = theta, psi = NULL)
-          dec[1,a] = Q_wald(p_hat, sigma_hat, c_mat, sizes[[1]], 0.05)$reject
-          dec[2,a] = Q_anova(p_hat, sigma_hat, c_mat, f2, sizes[[1]], 0.05)$reject
-          dec[3,a] = max_T(p_hat, sigma_hat, p_null = 0.5, c_mat, sizes[[1]], normal = F, 0.05)$reject
+      theta = rep(1/sets$nn, length(sizes[[1]]))
+      #for(a in 1:nsim){
+      dec = foreach(a = 1:nsim, .combine = "cbind", .packages("rankCluster")) %dopar% {
+        data_n = h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "exchangeable", rho = settings$rho[z], params = dist_params)
+        #p_hat  = rel_eff(data_n)
+        #sigma_hat = sigma_est(sizes[[1]], data_n, theta = theta, psi = NULL)
+        # dec[1,a] = q_wald(sizes[[1]], data_n, c_mat, theta = theta, psi = NULL, alpha = 0.05)$reject
+        # dec[2,a] = q_anova(sizes[[1]], data_n, c_mat, f2, theta = theta, psi = NULL, alpha = 0.05)$reject
+        # dec[3,a] = max_T(data_n, p_null = 0.5, c_mat, sizes[[1]], normal = F, 0.05, theta = theta, psi = NULL)$reject
+        c(q_wald(sizes[[1]], data_n, c_mat, theta = theta, psi = NULL, alpha = 0.05)$reject,
+          q_anova(sizes[[1]], data_n, c_mat, f2, theta = theta, psi = NULL, alpha = 0.05)$reject,
+          max_T(sizes[[1]], data_n, p_null = 0.5, c_mat, normal = F, 0.05, theta = theta, psi = NULL)$reject)
       }
       settings[,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
       settings$f_2[z] = f2
@@ -97,14 +115,18 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type){
 
         c_mat = contrMat(sizes[[1]], type = c_type) %*% diag(1, length(sizes[[1]]))
         dec = matrix(0, nrow = 3, ncol = nsim)
-        theta = 1/sets$nn
-        for(a in 1:nsim){
+        theta = rep(1/sets$nn, length(sizes[[1]]))
+        #for(a in 1:nsim){
+        dec = foreach(a = 1:nsim, .combine = "cbind", .packages("rankCluster")) %dopar% {
           data_n = h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "exchangeable", rho = settings$rho[z], params = dist_params)
-          p_hat  = rel_eff(data_n)
-          sigma_hat = sigma_est(sizes[[1]], data_n, theta = theta, psi = NULL)
-          dec[1,a] = Q_wald(p_hat, sigma_hat, c_mat, sizes[[1]], 0.05)$reject
-          dec[2,a] = Q_anova(p_hat, sigma_hat, c_mat, f2, sizes[[1]], 0.05)$reject
-          dec[3,a] = max_T(p_hat, sigma_hat, p_null = 0.5, c_mat, sizes[[1]], normal = F, 0.05)$reject
+          #p_hat  = rel_eff(data_n)
+          #sigma_hat = sigma_est(sizes[[1]], data_n, theta = theta, psi = NULL)
+          # dec[1,a] = q_wald(sizes[[1]], data_n, c_mat, theta = theta, psi = NULL, alpha = 0.05)$reject
+          # dec[2,a] = q_anova(sizes[[1]], data_n, c_mat, f2, theta = theta, psi = NULL, alpha = 0.05)$reject
+          # dec[3,a] = max_T(data_n, p_null = 0.5, c_mat, sizes[[1]], normal = F, 0.05, theta = theta, psi = NULL)$reject
+          c(q_wald(sizes[[1]], data_n, c_mat, theta = theta, psi = NULL, alpha = 0.05)$reject,
+            q_anova(sizes[[1]], data_n, c_mat, f2, theta = theta, psi = NULL, alpha = 0.05)$reject,
+            max_T(sizes[[1]], data_n, p_null = 0.5, c_mat, normal = F, 0.05, theta = theta, psi = NULL)$reject)
         }
         settings[,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
         settings$f_2[z] = f2
@@ -119,5 +141,12 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type){
 
     names(results) = c("no_cor", "mild_cor", "sev_cor")
     save(results, file = paste0(dist_c, "_results.RData"))
+
+    stopCluster(cl)
+
     return(results)
+
 }
+
+
+

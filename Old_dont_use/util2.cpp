@@ -77,7 +77,7 @@ Rcpp::NumericVector rel_eff_cpp(Rcpp::List data, Rcpp::NumericVector theta, Rcpp
   return p;
 }
 
-// [[Rcpp::export]]
+
 double kappa(arma::vec psi, int j){
     double res = 1 - 2 * psi[j] + arma::dot(psi, psi);
     return res;

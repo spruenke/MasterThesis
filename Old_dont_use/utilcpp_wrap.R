@@ -100,7 +100,18 @@ sourceCpp("util_arma.cpp")
         }
       }
       if(is.null(theta)) theta = rep(1/length(data), length(data))
-      return( g(n) * sigma_est_cpp3(n, data, theta, psi))
+      return(sigma_est_cpp4(n, data, theta, psi))
+    }
+
+    debug_p = function(n, data, theta = NULL, psi = NULL){
+      if(is.null(psi)){
+        psi = list()
+        for(i in 1:length(data)){
+          psi[[i]] = rep(1 / length(data[[i]]), length(data[[i]]))
+        }
+      }
+      if(is.null(theta)) theta = rep(1/length(data), length(data))
+      return(sigma_est_cpp4(n, data, theta, psi))
     }
 
 
@@ -130,10 +141,12 @@ sourceCpp("util_arma.cpp")
       }
       if(is.null(theta)) theta = rep(1/length(data), length(data))
       st   = q_anova_arma(n, data, theta, psi, cont)
-      stat = g(n) * st[[1]]
+      stat =  st[[1]]  * g(n)
       #df   = c(sum(diag(M%*%Sigma))^2 / sum(diag(M%*%Sigma%*%M%*%Sigma)), f_2)
       df   = c(st[[2]], f_2)
+      crit = qf(1-alpha, df[1], df[2])
       pv   = 1 - pf(stat, df[1], df[2])
-      dec  = pv < alpha
-      return(list(Statistic = stat, df = df, p.value = pv, reject = dec, nen = st[[3]]))
+      dec = stat > crit
+      #dec  = pv < alpha
+      return(list(Statistic = stat, stat2 = st[[1]], df = df, p.value = pv, reject = dec, nen = st[[3]]))
     }

@@ -68,10 +68,14 @@ arma::vec rel_eff_cpp2(Rcpp::List data, arma::vec theta, Rcpp::List psi){
   return p;
 }
 
-//// [[Rcpp::export]]
-double kappa(arma::vec psi, int j){
+
+double kappa_cpp(arma::vec psi, int j){
   double res = 1 - 2 * psi[j] + arma::dot(psi, psi);
   return res;
+}
+
+double g(arma::vec n){
+  return arma::sum(n);
 }
 
 // [[Rcpp::export]]
@@ -116,12 +120,12 @@ arma::mat sigma_est_cpp3(arma::vec n, Rcpp::List data, arma::vec theta, Rcpp::Li
     for(int j = 0; j < sublist2.length(); j++){
       arma::vec A_ij = sublist[j];
       arma::vec y_lhs = A_ij - (tmp) ;
-      
+
       sublist2(j) = y_lhs * y_lhs.t(); // sigma_list[[i]][[j]]
     }
     sigma_list(i) = sublist2;
   }
-  
+
   // Create sigma matrix
   arma::mat sigma(d, d, arma::fill::zeros);
   for(int i = 0; i < d; i++){
@@ -129,19 +133,100 @@ arma::mat sigma_est_cpp3(arma::vec n, Rcpp::List data, arma::vec theta, Rcpp::Li
     arma::vec psi_i = psi[i];
     for(int j = 0; j < sigma_list.length(); j++){
         arma::mat subsig = siglist[j];
-        sigma += subsig * (pow(psi_i[j], 2)) / kappa(psi_i, j);
+        sigma += subsig * (pow(psi_i[j], 2)) / kappa_cpp(psi_i, j);
       }
     }
-  
-  return sigma;
+
+  return g(n) * sigma;
 }
+
+
+// [[Rcpp::export]]
+arma::mat sigma_est_cpp4(arma::vec n, Rcpp::List data, arma::vec theta, Rcpp::List psi){
+  int d = n.n_elem;
+  arma::vec ind = arma::regspace(0, (d-1));
+  Rcpp::List A(d);
+  Rcpp::List A_bar(d);
+  Rcpp::List sigma_list(d);
+  //std::vector<std::vector<arma::mat>>sigma_list_2;
+  for(int i = 0; i < d; i++){
+    int nii = n(i);
+    Rcpp::List sublist(nii);
+    Rcpp::List subdat = data(i);
+    arma::vec psi_i = psi(i);
+    for(int j = 0; j < nii; j++){
+      arma::vec subvec = arma::zeros(d);
+      arma::vec subdat_j = subdat[j];
+      for(int s = 0; s < d; s++){
+        if(s == i){
+          arma::vec ind_new = ind(arma::find(ind != s));
+          for(unsigned int hh = 0; hh < ind_new.n_elem; hh++){
+            unsigned int h = ind_new(hh);
+            Rcpp::List dat_h = data[h];
+            subvec(s) += theta(h) * arma::sum(f_psi_cpp3(subdat_j, dat_h, psi_i)) / subdat_j.n_elem;
+          }
+        } else {
+          subvec(s) = (-1) * theta(s) * arma::sum(f_psi_cpp3(subdat_j, data[s], psi_i)) / subdat_j.n_elem;
+        }
+      }
+      sublist(j) = subvec;
+    }
+    A(i) = sublist;
+    arma::vec tmp = arma::zeros(d);
+    for(int t = 0; t < d; t++){
+      for(int j = 0; j < sublist.length(); j++){
+        arma::vec A_vec = sublist[j];
+        tmp(t) += A_vec(t) * psi_i(j);
+      }
+    }
+    A_bar(i) = tmp;
+    Rcpp::List sublist2(nii);
+    //std::vector<arma::mat> sublist22;
+
+
+
+
+
+
+    for(int j = 0; j < sublist.length(); j++){
+      arma::vec A_ij = sublist[j];
+      arma::vec y_lhs = A_ij - tmp;
+      //Rcpp::Rcout << A_ij;
+      sublist2(j) = y_lhs * y_lhs.t(); // sigma_list[[i]][[j]]
+      //sublist22.push_back(y_lhs * y_lhs.t());
+    }
+    sigma_list(i) = sublist2;
+    //sigma_list_2.push_back(sublist22);
+
+  }
+
+  // Create sigma matrix
+  arma::mat sigma(d, d, arma::fill::zeros);
+  for(int i = 0; i < d; i++){
+    Rcpp::List siglist = sigma_list[i];
+    //std::vector<arma::mat> siglist = sigma_list_2.at(i);
+    arma::vec psi_i = psi[i];
+
+    for(int j = 0; j < siglist.length(); j++){
+      arma::mat subsig = siglist[j];
+      //Rcpp::Rcout << siglist.at(j) << "\n";
+      sigma += subsig * (pow(psi_i[j], 2)) * kappa_cpp(psi_i, j);
+    }
+  }
+
+  return g(n) * sigma;
+  // return sigma_list;
+}
+
+
+
 
 // -- Stats --
 // [[Rcpp::export]]
 Rcpp::List q_wald_arma(arma::vec n, Rcpp::List data, arma::vec theta, Rcpp::List psi, arma::mat cmat){
   arma::mat res;
   arma::vec p = rel_eff_cpp2(data, theta, psi);
-  arma::mat sigma = sigma_est_cpp3(n, data, theta, psi);
+  arma::mat sigma = sigma_est_cpp4(n, data, theta, psi);
   res = p.t() * cmat.t() * arma::pinv(cmat * sigma * cmat.t()) * cmat * p;
   unsigned int df_1 = arma::rank(cmat * sigma);
   return Rcpp::List::create(res, df_1);
@@ -151,10 +236,35 @@ Rcpp::List q_wald_arma(arma::vec n, Rcpp::List data, arma::vec theta, Rcpp::List
 Rcpp::List q_anova_arma(arma::vec n, Rcpp::List data, arma::vec theta, Rcpp::List psi, arma::mat cmat){
   arma::mat res;
   arma::vec p = rel_eff_cpp2(data, theta, psi);
-  arma::mat sigma = sigma_est_cpp3(n, data, theta, psi);
+  arma::mat sigma = sigma_est_cpp4(n, data, theta, psi);
   arma::mat M = cmat.t() * arma::pinv(cmat * cmat.t()) * cmat;
   double nen = arma::trace(M * sigma);
   res = p.t() * M * p / nen;
-  double df_1 = pow(arma::sum(arma::diagvec(M * sigma)), 2) / arma::sum(arma::diagvec(M * sigma * M * sigma));
-  return Rcpp::List::create(res, df_1,nen);
+  double df_1 = pow(arma::trace(M * sigma), 2) / arma::trace(M * sigma * M * sigma);
+  return Rcpp::List::create(res, df_1, nen);
+}
+
+// [[Rcpp::export]]
+arma::mat m_mat(arma::mat cmat){
+  arma::mat M = cmat.t() * arma::pinv(cmat * cmat.t()) * cmat;
+  return M;
+}
+
+// [[Rcpp::export]]
+double nen(arma::mat M, arma::mat sigma){
+  return arma::trace(M * sigma);
+}
+
+// [[Rcpp::export]]
+arma::mat res(arma::vec p, arma::mat M){
+  arma::mat res;
+  return res = p.t() * M * p;
+}
+
+// [[Rcpp::export]]
+arma::mat stat_pp(arma::vec p, arma::mat M, arma::mat sigma){
+  arma::mat res;
+    double nen = arma::trace(M * sigma);
+  res = p.t() * M * p / nen;
+  return res;
 }
