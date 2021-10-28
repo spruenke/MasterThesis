@@ -22,7 +22,7 @@ source("sim_fun.R")
 
 # Simulation --------------------------------------------------------------
 
-nsim  = 100 # Number of Simulation Runs
+nsim  = 1000 # Number of Simulation Runs
 dists = c("norm", "pois", "beta", "binom")
 param_list = list(list(mean = 0, sd = 1), list(lambda = 3), list(shape1 = 2, shape2 = 5), list(size = 1, prob = 0.5))
 
