@@ -35,7 +35,7 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type){
         dec = matrix(0, nrow = 3, ncol = nsim)
         theta = rep(1/sets$nn, length(sizes[[1]]))
         #for(a in 1:nsim){
-        dec = foreach(a = 1:nsim, .combine = "cbind", .packages = c("rankCluster")) %do% {
+        dec = foreach(a = 1:nsim, .combine = "cbind", .packages = c("rankCluster")) %dopar% {
           data_n = h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "independent", rho = settings$rho[z], params = dist_params)
           #p_hat  = rel_eff(data_n)
           #sigma_hat = sigma_est(sizes[[1]], data_n, theta = theta, psi = NULL)
