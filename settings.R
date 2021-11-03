@@ -17,11 +17,11 @@ each_s = c(F, T)
 both_s = c(F, T)
 
 # Identical Sample Sizes --------------------------------------------------
-    n_i = c(3, 10, 25, 50, 100)
+    n_i = c(3, 5, 10, 15, 25)
 
   # Identical Cluster Size
 
-      m_ij = c(3, 5, 10, 25, 40)
+      m_ij = c(3, 5, 10, 15)
       nm_1 = expand.grid(nn, n_i, m_ij)
       nm_1$each_s = F
       nm_1$both_s = F
@@ -31,7 +31,7 @@ both_s = c(F, T)
       colnames(nm_1)[1:3] = c("nn", "n_i", "m_ij")
 
   # Large/Small Cluster
-      m_ij = c(10, 25)
+      m_ij = c(5, 10)
       nm_2 = expand.grid(nn, n_i, m_ij, each_s, both_s)
       nm_2$identical_s = T
       nm_2$identical_c = F
@@ -43,11 +43,11 @@ both_s = c(F, T)
 
 # Large/Small Sample Size -------------------------------------------------
 
-    n_i = c(10, 25, 50)
+    n_i = c(5, 10, 15)
 
   # Identical Cluster Size
 
-      m_ij = c(3, 5, 10, 25, 40)
+      m_ij = c(3, 5, 10, 15)
       nm_3 = expand.grid(nn, n_i, m_ij)
       nm_3$each_s = F
       nm_3$both_s = F
@@ -57,7 +57,7 @@ both_s = c(F, T)
       colnames(nm_3)[1:3] = c("nn", "n_i", "m_ij")
 
   # Large/Small Cluster
-      m_ij = c(10, 25)
+      m_ij = c(5, 10)
       nm_4 = expand.grid(nn, n_i, m_ij, each_s, both_s)
       nm_4$identical_s = F
       nm_4$identical_c = F
