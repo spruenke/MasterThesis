@@ -37,7 +37,7 @@ both_s = c(F, T)
       nm_2$identical_c = F
       colnames(nm_2)[1:5] = c("nn", "n_i", "m_ij", "each_s", "both_s")
       # Remove invalid condition
-      nm_2 = nm_2[-which(which(nm_2$each_s == T) %in% which(nm_2$both_s == F)),]
+      #nm_2 = nm_2[-which(which(nm_2$each_s == T) %in% which(nm_2$both_s == F)),]
       nm_2$grp = 2
 
 
@@ -62,12 +62,15 @@ both_s = c(F, T)
       nm_4$identical_s = F
       nm_4$identical_c = F
       colnames(nm_4)[1:5] = c("nn", "n_i", "m_ij", "each_s", "both_s")
-      nm_4 = nm_4[-which(which(nm_4$each_s == T) %in% which(nm_4$both_s == F)),]
+      #nm_4 = nm_4[-which(which(nm_4$each_s == T) %in% which(nm_4$both_s == F)),]
       nm_4$grp = 4
 
 
 # Bind --------------------------------------------------------------------
 
     samples = rbind(nm_1, nm_2, nm_3, nm_4)
+      rem_ind = intersect(which(samples$each_s == T), which(samples$both_s ==F))
+      
+      samples = samples[-rem_ind,]
 
 rm(nm_1, nm_2, nm_3, nm_4, both_s, each_s, m_ij, n_i, nn)
