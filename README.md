@@ -1,5 +1,5 @@
 # MasterThesis
 
-* dat_gen.R is a script that provides functions for sample-size and data generation
-* util.R provides a bunch of necessary functions (such as empirical cdf)
-* stats.R provides functions for the test statistics and procedures
+* sim_fun.R is the function conducting the simulation
+* settings.R provides the simulation settings
+* wrapper.R wraps everything together
