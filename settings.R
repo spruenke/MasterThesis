@@ -1,4 +1,4 @@
-<<<<<<< Updated upstream
+
 # number of Samples nn = 3, 5, 10, 25
 # Identical Sample Size n_i = 3, 5, 10, 15, 25, 50, 100, 1000
 
@@ -75,7 +75,7 @@ both_s = c(F, T)
       samples = samples[-rem_ind,]
 
 rm(nm_1, nm_2, nm_3, nm_4, both_s, each_s, m_ij, n_i, nn)
-=======
+
 # number of Samples nn = 3, 5, 10, 25
 # Identical Sample Size n_i = 3, 5, 10, 15, 25, 50, 100, 1000
 
@@ -152,4 +152,4 @@ both_s = c(F, T)
       samples = samples[-rem_ind,]
 
 rm(nm_1, nm_2, nm_3, nm_4, both_s, each_s, m_ij, n_i, nn)
->>>>>>> Stashed changes
+

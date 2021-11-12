@@ -46,7 +46,7 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type){
           rankCluster::q_anova(sizes[[1]], data_n, c_mat, f2, theta = theta, psi = NULL, alpha = 0.05)$reject,
           rankCluster::max_T(sizes[[1]], data_n, p_null = 0.5, c_mat, normal = F, 0.05, theta = theta, psi = NULL)$reject)
         }
-        settings[,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
+        settings[z,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
         settings$f_2[z] = f2
         print(paste0("No: ", z))
       }
@@ -76,7 +76,7 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type){
       dec = matrix(0, nrow = 3, ncol = nsim)
       theta = rep(1/sets$nn, length(sizes[[1]]))
       #for(a in 1:nsim){
-      dec = foreach(a = 1:nsim, .combine = "cbind", .packages("rankCluster")) %dopar% {
+      dec = foreach(a = 1:nsim, .combine = "cbind", .packages = c("rankCluster")) %dopar% {
         data_n = h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "exchangeable", rho = settings$rho[z], params = dist_params)
         #p_hat  = rel_eff(data_n)
         #sigma_hat = sigma_est(sizes[[1]], data_n, theta = theta, psi = NULL)
@@ -117,7 +117,7 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type){
         dec = matrix(0, nrow = 3, ncol = nsim)
         theta = rep(1/sets$nn, length(sizes[[1]]))
         #for(a in 1:nsim){
-        dec = foreach(a = 1:nsim, .combine = "cbind", .packages("rankCluster")) %dopar% {
+        dec = foreach(a = 1:nsim, .combine = "cbind", .packages = c("rankCluster")) %dopar% {
           data_n = h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "exchangeable", rho = settings$rho[z], params = dist_params)
           #p_hat  = rel_eff(data_n)
           #sigma_hat = sigma_est(sizes[[1]], data_n, theta = theta, psi = NULL)

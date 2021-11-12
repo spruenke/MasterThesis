@@ -33,9 +33,10 @@ settings$wald = 0
 settings$anv  = 0
 settings$maxt = 0
 
-z = 10
+z = 81
 
 sets = settings[z,]
+sets
 sizes = rankCluster::nm_gen(nn = sets$nn, n_i = sets$n_i, m_ij = sets$m_ij, each_s = sets$each_s, both_s = sets$both_s, identical_s = sets$identical_s, identical_c = sets$identical_c)
 
 f2 = sqrt(sum(sizes[[1]]) - length(sizes[[1]]))
@@ -46,6 +47,9 @@ theta = rep(1/sets$nn, length(sizes[[1]]))
 psi = NULL
 
 data_n = h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "independent", rho = settings$rho[z], params = dist_params)
+debug_p(sizes[[1]], data_n, theta, NULL)
+
+#testcpp4 for z 151
 
 # f_theta_p(c(0.2, 0.4), data_n)
 # f_theta_p2(c(0.2, 0.4), data_n)
@@ -58,6 +62,7 @@ data_n = h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "independent",
 
 max_T2  = function(n, data, p_null = 0.5, cont, normal = FALSE, theta = NULL, psi = NULL, alpha){
   Sigma = rankCluster::sigma_est(n, data, theta = theta, psi = psi)
+  #Sigma = debug_p(sizes[[1]], data_n, theta, psi)
   p = rankCluster::rel_eff(data, theta, psi)
   R = cov2cor(Sigma)
   R_c = cov2cor(cont%*%Sigma%*%t(cont))
@@ -67,15 +72,30 @@ max_T2  = function(n, data, p_null = 0.5, cont, normal = FALSE, theta = NULL, ps
   if(normal == FALSE) rej = 1-mvtnorm::pmvt(upper = abs(stat), df = g(n) - 1, corr = R)
   #dec = max(abs(stat)) > crit
   #return(list(Statistic = stat, df = g(n) - 1, reject = dec))
-  
+
   return(rej < alpha/2)
+}
+
+max_T_glob  = function(n, data, p_null = 0.5, cont, normal = FALSE, theta = NULL, psi = NULL, alpha){
+  Sigma = rankCluster::sigma_est(n, data, theta = theta, psi = psi)
+  p = rankCluster::rel_eff(data, theta, psi)
+  R = cov2cor(Sigma)
+  R_c = cov2cor(cont%*%Sigma%*%t(cont))
+  stat = sqrt(g(n)) * (p - p_null) / sqrt(diag(Sigma))
+  #if(normal == TRUE) crit = mvtnorm::qmvnorm(1-alpha, tail = "lower.tail", mean = rep(0, length(p)), corr = R)$quantile
+  #if(normal == FALSE) crit = mvtnorm::qmvt(1-alpha, tail = "lower.tail", df = g(n) - 1, corr = R)$quantile
+  if(normal == FALSE) rej = 1-mvtnorm::pmvt(upper = rep(max(abs(stat)), nrow(R)), df = length(n) -1, corr = R, keepAttr = F)
+  #dec = max(abs(stat)) > crit
+  #return(list(Statistic = stat, df = g(n) - 1, reject = dec))
+  dec = rej <= alpha/2
+  return(list(Statistic = stat, df = g(n) - 1, reject = dec))
 }
 
 rankCluster::rel_eff(data_n)
 
 ab = replicate(1000, expr = {
   data_b = rankCluster::h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "independent", rho = settings$rho[z], params = dist_params)
-  
+
   # f_theta_p(c(0.2, 0.4), data_n)
   # f_theta_p2(c(0.2, 0.4), data_n)
   # if(is.null(psi)){
@@ -84,10 +104,21 @@ ab = replicate(1000, expr = {
   #     psi[[i]] = round(rep(1 / length(data_n[[i]]), length(data_n[[i]])), 7)
   #   }
   # }
+
+  # c(rankCluster::q_wald(sizes[[1]], data_b, cont=c_mat, alpha = 0.05)$reject,
+  #   rankCluster::q_anova(sizes[[1]], data_b, cont = c_mat, f_2 = f2, alpha = 0.05)$reject)
   
-  c(rankCluster::q_wald(sizes[[1]], data_b, cont=c_mat, alpha = 0.05)$reject,
-    rankCluster::q_anova(sizes[[1]], data_b, cont = c_mat, f_2 = f2, alpha = 0.05)$reject)
+  c(#q_wald(sizes[[1]], data_b, cont=c_mat, alpha = 0.05)$reject,
+    #q_anova(sizes[[1]], data_b, cont = c_mat, f_2 = f2, alpha = 0.05)$reject,
+    #max_T2(sizes[[1]], data_b, 0.5, cont = c_mat, theta = theta, alpha = 0.05),
+    rankCluster::q_wald(sizes[[1]], data_b, cont=c_mat, alpha = 0.05)$reject,
+    rankCluster::q_anova(sizes[[1]], data_b, cont = c_mat, f_2 = f2, alpha = 0.05)$reject,
+    rankCluster::max_T(sizes[[1]], data_b, cont=c_mat, alpha = 0.05)$reject,
+    max_T_glob(sizes[[1]], data_b, cont=c_mat, alpha = 0.05)$reject)
+    #rankCluster::max_T_old(sizes[[1]], data_b, cont=c_mat, alpha = 0.05)$reject)
 })
+
+rowMeans(ab)
 rel_eff_p(data_n)
 rel_eff_p2(data_n)
 
@@ -96,6 +127,7 @@ nn = rep(3, 5)
 A_1 = sigma_est(sizes[[1]], data_n, theta = theta, psi = NULL)
 A_2 = sigma_est_p2(sizes[[1]], data_n, theta = NULL, psi = NULL)
 A_3 = debug_p(sizes[[1]], data_n, theta = NULL, psi = NULL)
+A_4 = rankCluster::sigma_est(sizes[[1]], data_n, theta = NULL, psi = NULL)
 
 st = Sys.time()
 rankCluster::max_T(sizes[[1]], data_n, cont = c_mat, alpha = 0.05)$reject
@@ -108,7 +140,7 @@ microbenchmark::microbenchmark(rankCluster::max_T(sizes[[1]], data_n, cont=c_mat
                                rankCluster::max_T2(sizes[[1]], data_n, cont = c_mat, alpha = 0.05)$reject)
 ab = replicate(1000, expr = {
   data_b = rankCluster::h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "independent", rho = settings$rho[z], params = dist_params)
-  
+
   # f_theta_p(c(0.2, 0.4), data_n)
   # f_theta_p2(c(0.2, 0.4), data_n)
   # if(is.null(psi)){
@@ -117,7 +149,7 @@ ab = replicate(1000, expr = {
   #     psi[[i]] = round(rep(1 / length(data_n[[i]]), length(data_n[[i]])), 7)
   #   }
   # }
-  
+
   c(rankCluster::max_T(sizes[[1]], data_b, cont=c_mat, alpha = 0.05)$reject,
     rankCluster::max_T2(sizes[[1]], data_b, cont = c_mat, alpha = 0.05)$reject)
 })

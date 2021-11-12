@@ -67,7 +67,7 @@ sourceCpp("util_arma.cpp")
     }
 
     g = function(n){
-      sum(sapply(n, length))
+      sum(n)
     }
 
     # sigma_est_p = function(n, data, theta = NULL, psi = NULL){
