@@ -12,13 +12,16 @@
 
 # One Large, One Small Cluster m_ij = 10, 15, 20, 25; m_ik = 3; m_ih = 40
 
+## no groups max 5
+## min number cluster 8
+
 # number of samples
-nn = c(3, 5, 10)
+nn = c(2, 3, 4, 5)
 each_s = c(F, T)
 both_s = c(F, T)
 
 # Identical Sample Sizes --------------------------------------------------
-    n_i = c(3, 5, 10, 15, 25)
+    n_i = c(12, 15, 20)
 
   # Identical Cluster Size
 
@@ -44,7 +47,7 @@ both_s = c(F, T)
 
 # Large/Small Sample Size -------------------------------------------------
 
-    n_i = c(5, 10, 15)
+    n_i = c(12, 15, 20)
 
   # Identical Cluster Size
 
@@ -71,7 +74,7 @@ both_s = c(F, T)
 
     samples = rbind(nm_1, nm_2, nm_3, nm_4)
       rem_ind = intersect(which(samples$each_s == T), which(samples$both_s ==F))
-      
+
       samples = samples[-rem_ind,]
 
 rm(nm_1, nm_2, nm_3, nm_4, both_s, each_s, m_ij, n_i, nn)
@@ -148,7 +151,7 @@ both_s = c(F, T)
 
     samples = rbind(nm_1, nm_2, nm_3, nm_4)
       rem_ind = intersect(which(samples$each_s == T), which(samples$both_s ==F))
-      
+
       samples = samples[-rem_ind,]
 
 rm(nm_1, nm_2, nm_3, nm_4, both_s, each_s, m_ij, n_i, nn)
