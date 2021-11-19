@@ -87,7 +87,7 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type){
           q_anova(sizes[[1]], data_n, c_mat, f2, theta = theta, psi = NULL, alpha = 0.05)$reject,
           max_T(sizes[[1]], data_n, p_null = 0.5, c_mat, normal = F, 0.05, theta = theta, psi = NULL)$reject)
       }
-      settings[,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
+      settings[z,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
       settings$f_2[z] = f2
       print(paste0("Mild ", z))
     }
@@ -128,7 +128,7 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type){
             q_anova(sizes[[1]], data_n, c_mat, f2, theta = theta, psi = NULL, alpha = 0.05)$reject,
             max_T(sizes[[1]], data_n, p_null = 0.5, c_mat, normal = F, 0.05, theta = theta, psi = NULL)$reject)
         }
-        settings[,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
+        settings[z,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
         settings$f_2[z] = f2
         print(paste0("Severe: ", z))
 
