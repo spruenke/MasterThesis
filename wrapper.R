@@ -22,14 +22,23 @@ source("sim_fun.R")
 
 # Simulation --------------------------------------------------------------
 
-nsim  = 1000 # Number of Simulation Runs
+
+nsim  = 10000 # Number of Simulation Runs
 dists = c("norm", "pois", "beta", "binom")
 param_list = list(list(mean = 0, sd = 1), list(lambda = 3), list(shape1 = 2, shape2 = 5), list(size = 1, prob = 0.5))
 
+# Unweighted
 start_time = Sys.time()
 for(u in 1:length(dists)){
-    sim_fun(nsim, dists[u], param_list[[u]], samples, NULL, "Dunnett")
+    sim_fun(nsim, dists[u], param_list[[u]], samples, NULL, "Dunnett", w_type = "unweighted")
 }
 stop_time = Sys.time()
 dur = stop_time - start_time
 
+# Weighted
+start_time = Sys.time()
+for(u in 1:length(dists)){
+  sim_fun(nsim, dists[u], param_list[[u]], samples, NULL, "Dunnett", w_type = "weighted")
+}
+stop_time = Sys.time()
+dur_w = stop_time - start_time
