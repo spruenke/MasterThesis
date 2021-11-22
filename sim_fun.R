@@ -142,7 +142,7 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type, w_typ
     # Save --------------------------------------------------------------------
 
     names(results) = c("no_cor", "mild_cor", "sev_cor")
-    save(results, file = paste0(dist_c, "_results.RData"))
+    save(results, file = paste0(w_type, "_",dist_c, "_results.RData"))
 
     stopCluster(cl)
 
