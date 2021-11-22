@@ -8,6 +8,7 @@ dists = c("norm", "pois", "beta", "binom")
 grps = c(1:4)
 res_sets = expand.grid(grps, dists, stringsAsFactors = F)
 names_sets = expand.grid(c("no_cor", "mid_cor", "sev_cor"), grps, dists, stringsAsFactors = F)
+names_list = paste0(names_sets[,3], "_", names_sets[,2], "_", names_sets[,1])
 #load("norm_results.RData")
 
 res = c()
@@ -57,3 +58,4 @@ for(i in 1:nrow(res_sets)){
     }
   res = c(res, A)
 }
+names(res) = names_list
