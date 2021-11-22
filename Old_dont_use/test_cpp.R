@@ -17,8 +17,8 @@ source("utilcpp_wrap.R")
 nsim  = 1e4 # Number of Simulation Runs
 dists = c("norm", "pois", "beta", "binom")
 param_list = list(list(mean = 0, sd = 1), list(lambda = 3), list(shape1 = 2, shape2 = 5), list(size = 1, prob = 0.5))
-dist_c = "norm"
-dist_params = param_list[[1]]
+dist_c = "beta"
+dist_params = param_list[[3]]
 c_type = "Dunnett"
 results = list()
 
@@ -26,14 +26,14 @@ results = list()
 
 settings = samples
 
-settings$rho  = 0
+settings$rho  = 0.75
 settings$dist = dist_c
 settings$f_2  = 0
 settings$wald = 0
 settings$anv  = 0
 settings$maxt = 0
 
-z = 81
+z = 2
 
 sets = settings[z,]
 sets
@@ -46,8 +46,36 @@ dec = matrix(0, nrow = 3, ncol = nsim)
 theta = rep(1/sets$nn, length(sizes[[1]]))
 psi = NULL
 
-data_n = h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "independent", rho = settings$rho[z], params = dist_params)
-debug_p(sizes[[1]], data_n, theta, NULL)
+data_n = rankCluster::h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "independent", rho = settings$rho[z], params = dist_params)
+#debug_p(sizes[[1]], data_n, theta, NULL)
+
+
+sizes = rankCluster::nm_gen(nn = sets$nn, n_i = 3, m_ij = sets$m_ij, each_s = sets$each_s, both_s = sets$both_s, identical_s = sets$identical_s, identical_c = sets$identical_c)
+rankCluster::max_T(sizes[[1]], data_n, cont = c_mat, alpha = 0.05)
+for(b in 1:nrow(settings)){
+  sets = settings[b,]
+  sizes = rankCluster::nm_gen(nn = sets$nn, n_i = sets$n_i, m_ij = sets$m_ij, each_s = sets$each_s, both_s = sets$both_s, identical_s = sets$identical_s, identical_c = sets$identical_c)
+  f2 = sqrt(sum(sizes[[1]]) - length(sizes[[1]]))
+
+  c_mat = multcomp::contrMat(sizes[[1]], type = c_type) %*% diag(1, length(sizes[[1]]))
+  dec = matrix(0, nrow = 3, ncol = nsim)
+  theta = rep(1/sets$nn, length(sizes[[1]]))
+  psi = NULL
+  for(i in 1:1000){
+    data_n = rankCluster::h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "exchangeable", rho = settings$rho[z], params = dist_params)
+    assign(paste0("run_", i), data_n)
+    rankCluster::max_T(sizes[[1]], data_n, cont = c_mat, alpha = 0.05)$reject
+    rm(list = paste0("run_", i))
+    print(paste0("finished ", b, ": ", i))
+  }
+}
+
+abb = replicate(4000, expr = {
+  data_n = rankCluster::h_0_f(sizes[[1]], sizes[[2]], dist = dist_c, corstruct = "exchangeable", rho = settings$rho[z], params = dist_params)
+  #debug_p(sizes[[1]], data_n, theta, NULL)
+
+  rankCluster::max_T(sizes[[1]], data_n, cont = c_mat, alpha = 0.05)$reject
+})
 
 #testcpp4 for z 151
 
@@ -84,7 +112,7 @@ max_T_glob  = function(n, data, p_null = 0.5, cont, normal = FALSE, theta = NULL
   stat = sqrt(g(n)) * (p - p_null) / sqrt(diag(Sigma))
   #if(normal == TRUE) crit = mvtnorm::qmvnorm(1-alpha, tail = "lower.tail", mean = rep(0, length(p)), corr = R)$quantile
   #if(normal == FALSE) crit = mvtnorm::qmvt(1-alpha, tail = "lower.tail", df = g(n) - 1, corr = R)$quantile
-  if(normal == FALSE) rej = 1-mvtnorm::pmvt(upper = rep(max(abs(stat)), nrow(R)), df = length(n) -1, corr = R, keepAttr = F)
+  if(normal == FALSE) rej = 1-mvtnorm::pmvt(upper = rep(max(abs(stat)), nrow(R)), df = g(n) -1, corr = R, keepAttr = F)
   #dec = max(abs(stat)) > crit
   #return(list(Statistic = stat, df = g(n) - 1, reject = dec))
   dec = rej <= alpha/2
@@ -107,12 +135,12 @@ ab = replicate(1000, expr = {
 
   # c(rankCluster::q_wald(sizes[[1]], data_b, cont=c_mat, alpha = 0.05)$reject,
   #   rankCluster::q_anova(sizes[[1]], data_b, cont = c_mat, f_2 = f2, alpha = 0.05)$reject)
-  
+
   c(#q_wald(sizes[[1]], data_b, cont=c_mat, alpha = 0.05)$reject,
     #q_anova(sizes[[1]], data_b, cont = c_mat, f_2 = f2, alpha = 0.05)$reject,
     #max_T2(sizes[[1]], data_b, 0.5, cont = c_mat, theta = theta, alpha = 0.05),
-    rankCluster::q_wald(sizes[[1]], data_b, cont=c_mat, alpha = 0.05)$reject,
-    rankCluster::q_anova(sizes[[1]], data_b, cont = c_mat, f_2 = f2, alpha = 0.05)$reject,
+    #rankCluster::q_wald(sizes[[1]], data_b, cont=c_mat, alpha = 0.05)$reject,
+    #rankCluster::q_anova(sizes[[1]], data_b, cont = c_mat, f_2 = f2, alpha = 0.05)$reject,
     rankCluster::max_T(sizes[[1]], data_b, cont=c_mat, alpha = 0.05)$reject,
     max_T_glob(sizes[[1]], data_b, cont=c_mat, alpha = 0.05)$reject)
     #rankCluster::max_T_old(sizes[[1]], data_b, cont=c_mat, alpha = 0.05)$reject)
