@@ -14,7 +14,7 @@ names_list = paste0(names_sets[,3], "_", names_sets[,2], "_", names_sets[,1])
 res = c()
 for(i in 1:nrow(res_sets)){
 # grp 1, 2, 3, 4
-  load(paste0(res_sets[i,2], "_results.RData"))
+  load(paste0("Results/weighted_", res_sets[i,2], "_results.RData"))
     A = list()
     for(j in 1:3){
       dat = results[[j]]
