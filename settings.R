@@ -90,7 +90,7 @@ rm(nm_1, nm_2, nm_3, nm_4, both_s, each_s, m_ij, n_i)
   nm_5$identical_c = T
   nm_5$each_s = T
   nm_5$both_s = T
-  colnames(nm_5)[1:5] = c("nn", "n_i", "m_ij", "each_s", "both_s")
+  colnames(nm_5) = c("nn", "n_i", "m_ij", "identical_s", "identical_c", "each_s", "both_s")
   #nm_4 = nm_4[-which(which(nm_4$each_s == T) %in% which(nm_4$both_s == F)),]
   nm_5$grp = 5
   
@@ -102,7 +102,7 @@ rm(nm_1, nm_2, nm_3, nm_4, both_s, each_s, m_ij, n_i)
   nm_6$identical_c = F
   nm_6$each_s = T
   nm_6$both_s = T
-  colnames(nm_6)[1:5] = c("nn", "n_i", "m_ij", "each_s", "both_s")
+  colnames(nm_6) = c("nn", "n_i", "m_ij", "identical_s", "identical_c", "each_s", "both_s")
   #nm_4 = nm_4[-which(which(nm_4$each_s == T) %in% which(nm_4$both_s == F)),]
   nm_6$grp = 6
 
