@@ -42,9 +42,8 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type, w_typ
           # dec[1,a] = q_wald(sizes[[1]], data_n, c_mat, theta = theta, psi = NULL, alpha = 0.05)$reject
           # dec[2,a] = q_anova(sizes[[1]], data_n, c_mat, f2, theta = theta, psi = NULL, alpha = 0.05)$reject
           # dec[3,a] = max_T(data_n, p_null = 0.5, c_mat, sizes[[1]], normal = F, 0.05, theta = theta, psi = NULL)$reject
-          c(rankCluster::q_wald(sizes[[1]], data_n, c_mat, alpha = 0.05, type = w_type)$reject,
-          rankCluster::q_anova(sizes[[1]], data_n, c_mat, f2, alpha = 0.05, type = w_type)$reject,
-          rankCluster::max_T(sizes[[1]], data_n, p_null = 0.5, c_mat, normal = F, alpha = 0.05, type = w_type)$reject)
+          w = rankCluster::weight_fun(data_n, type = sets$type)
+          rankCluster::q_comb(sizes[[1]], data_n, p_null = 0.5, cont = c_mat, normal = F, theta = w$theta, psi = w$psi, alpha = 0.05)
         }
         settings[z,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
         settings$f_2[z] = f2
@@ -84,9 +83,8 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type, w_typ
         # dec[2,a] = q_anova(sizes[[1]], data_n, c_mat, f2, theta = theta, psi = NULL, alpha = 0.05)$reject
         # dec[3,a] = max_T(data_n, p_null = 0.5, c_mat, sizes[[1]], normal = F, 0.05, theta = theta, psi = NULL)$reject
 
-        c(rankCluster::q_wald(sizes[[1]], data_n, c_mat, alpha = 0.05, type = w_type)$reject,
-          rankCluster::q_anova(sizes[[1]], data_n, c_mat, f2, alpha = 0.05, type = w_type)$reject,
-          rankCluster::max_T(sizes[[1]], data_n, p_null = 0.5, c_mat, normal = F, alpha = 0.05, type = w_type)$reject)
+        w = rankCluster::weight_fun(data_n, type = sets$type)
+        rankCluster::q_comb(sizes[[1]], data_n, p_null = 0.5, cont = c_mat, normal = F, theta = w$theta, psi = w$psi, alpha = 0.05)
         }
 
       settings[z,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
@@ -126,9 +124,8 @@ sim_fun = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type, w_typ
           # dec[1,a] = q_wald(sizes[[1]], data_n, c_mat, theta = theta, psi = NULL, alpha = 0.05)$reject
           # dec[2,a] = q_anova(sizes[[1]], data_n, c_mat, f2, theta = theta, psi = NULL, alpha = 0.05)$reject
           # dec[3,a] = max_T(data_n, p_null = 0.5, c_mat, sizes[[1]], normal = F, 0.05, theta = theta, psi = NULL)$reject
-          c(rankCluster::q_wald(sizes[[1]], data_n, c_mat, alpha = 0.05, type = w_type)$reject,
-            rankCluster::q_anova(sizes[[1]], data_n, c_mat, f2, alpha = 0.05, type = w_type)$reject,
-            rankCluster::max_T(sizes[[1]], data_n, p_null = 0.5, c_mat, normal = F, alpha = 0.05, type = w_type)$reject)
+          w = rankCluster::weight_fun(data_n, type = sets$type)
+          rankCluster::q_comb(sizes[[1]], data_n, p_null = 0.5, cont = c_mat, normal = F, theta = w$theta, psi = w$psi, alpha = 0.05)
         }
         settings[z,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
         settings$f_2[z] = f2
@@ -191,9 +188,8 @@ sim_fun2 = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type, w_ty
       # dec[1,a] = q_wald(sizes[[1]], data_n, c_mat, theta = theta, psi = NULL, alpha = 0.05)$reject
       # dec[2,a] = q_anova(sizes[[1]], data_n, c_mat, f2, theta = theta, psi = NULL, alpha = 0.05)$reject
       # dec[3,a] = max_T(data_n, p_null = 0.5, c_mat, sizes[[1]], normal = F, 0.05, theta = theta, psi = NULL)$reject
-      c(rankCluster::q_wald(sizes[[1]], data_n, c_mat, alpha = 0.05, type = w_type)$reject,
-        rankCluster::q_anova(sizes[[1]], data_n, c_mat, f2, alpha = 0.05, type = w_type)$reject,
-        rankCluster::max_T(sizes[[1]], data_n, p_null = 0.5, c_mat, normal = F, alpha = 0.05, type = w_type)$reject)
+      w = rankCluster::weight_fun(data_n, type = sets$type)
+      rankCluster::q_comb(sizes[[1]], data_n, p_null = 0.5, cont = c_mat, normal = F, theta = w$theta, psi = w$psi, alpha = 0.05)
     }
     settings[z,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
     settings$f_2[z] = f2
@@ -233,9 +229,8 @@ sim_fun2 = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type, w_ty
       # dec[2,a] = q_anova(sizes[[1]], data_n, c_mat, f2, theta = theta, psi = NULL, alpha = 0.05)$reject
       # dec[3,a] = max_T(data_n, p_null = 0.5, c_mat, sizes[[1]], normal = F, 0.05, theta = theta, psi = NULL)$reject
       
-      c(rankCluster::q_wald(sizes[[1]], data_n, c_mat, alpha = 0.05, type = w_type)$reject,
-        rankCluster::q_anova(sizes[[1]], data_n, c_mat, f2, alpha = 0.05, type = w_type)$reject,
-        rankCluster::max_T(sizes[[1]], data_n, p_null = 0.5, c_mat, normal = F, alpha = 0.05, type = w_type)$reject)
+      w = rankCluster::weight_fun(data_n, type = sets$type)
+      rankCluster::q_comb(sizes[[1]], data_n, p_null = 0.5, cont = c_mat, normal = F, theta = w$theta, psi = w$psi, alpha = 0.05)
     }
     
     settings[z,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
@@ -275,9 +270,8 @@ sim_fun2 = function(nsim, dist_c, dist_params, samples, f_2 = NULL, c_type, w_ty
       # dec[1,a] = q_wald(sizes[[1]], data_n, c_mat, theta = theta, psi = NULL, alpha = 0.05)$reject
       # dec[2,a] = q_anova(sizes[[1]], data_n, c_mat, f2, theta = theta, psi = NULL, alpha = 0.05)$reject
       # dec[3,a] = max_T(data_n, p_null = 0.5, c_mat, sizes[[1]], normal = F, 0.05, theta = theta, psi = NULL)$reject
-      c(rankCluster::q_wald(sizes[[1]], data_n, c_mat, alpha = 0.05, type = w_type)$reject,
-        rankCluster::q_anova(sizes[[1]], data_n, c_mat, f2, alpha = 0.05, type = w_type)$reject,
-        rankCluster::max_T(sizes[[1]], data_n, p_null = 0.5, c_mat, normal = F, alpha = 0.05, type = w_type)$reject)
+      w = rankCluster::weight_fun(data_n, type = sets$type)
+      rankCluster::q_comb(sizes[[1]], data_n, p_null = 0.5, cont = c_mat, normal = F, theta = w$theta, psi = w$psi, alpha = 0.05)
     }
     settings[z,which(colnames(settings) %in% c("wald", "anv", "maxt"))] = rowMeans(dec)
     settings$f_2[z] = f2
