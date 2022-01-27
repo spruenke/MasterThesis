@@ -30,7 +30,7 @@ param_list = list(list(mean = 0, sd = 1), list(lambda = 3), list(shape1 = 2, sha
 # Unweighted
 start_time = Sys.time()
 for(u in 1:length(dists)){
-    sim_fun(nsim, dists[u], param_list[[u]], samples, NULL, "Dunnett", w_type = "unweighted")
+    sim_fun(nsim, dists[u], param_list[[u]], samples, NULL, "Tukey", w_type = "unweighted")
 }
 stop_time = Sys.time()
 dur = stop_time - start_time
@@ -38,7 +38,7 @@ dur = stop_time - start_time
 # Weighted
 start_time = Sys.time()
 for(u in 1:length(dists)){
-  sim_fun(nsim, dists[u], param_list[[u]], samples, NULL, "Dunnett", w_type = "weighted")
+  sim_fun(nsim, dists[u], param_list[[u]], samples, NULL, "Tukey", w_type = "weighted")
 }
 stop_time = Sys.time()
 dur_w = stop_time - start_time
@@ -48,7 +48,7 @@ dur_w = stop_time - start_time
 # Unweighted
 start_time = Sys.time()
 for(u in 1:length(dists)){
-  sim_fun2(nsim, dists[u], param_list[[u]], samples2, NULL, "Dunnett", w_type = "unweighted")
+  sim_fun2(nsim, dists[u], param_list[[u]], samples2, NULL, "Tukey", w_type = "unweighted")
 }
 stop_time = Sys.time()
 dur2 = stop_time - start_time
@@ -56,7 +56,7 @@ dur2 = stop_time - start_time
 # Weighted
 start_time = Sys.time()
 for(u in 1:length(dists)){
-  sim_fun2(nsim, dists[u], param_list[[u]], samples2, NULL, "Dunnett", w_type = "weighted")
+  sim_fun2(nsim, dists[u], param_list[[u]], samples2, NULL, "Tukey", w_type = "weighted")
 }
 stop_time = Sys.time()
 dur_w2 = stop_time - start_time
