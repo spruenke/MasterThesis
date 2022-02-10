@@ -13,7 +13,7 @@ res_list = list()
 # Type-I Error ------------------------------------------------------------
 
       # Norm 1
-      settings = subset(samples, grp = 1)
+      settings = subset(samples, grp == 1)
       settings$type = "unweighted"
       settings$rho = runif(1, 0.35, 0.8)
       settings$corstruct = "exchangeable"
@@ -52,7 +52,7 @@ res_list = list()
       res_list[[1]] = settings
       
       # Pois 1
-      settings = subset(samples, grp = 1)
+      settings = subset(samples, grp == 1)
       settings$type = "weighted"
       settings$rho = runif(1, 0.05, 0.35)
       settings$corstruct = "exchangeable"
@@ -91,7 +91,7 @@ res_list = list()
       res_list[[2]] = settings
       
       # Beta 4
-      settings = subset(samples, grp = 4)
+      settings = subset(samples, grp == 4)
       settings$type = "unweighted"
       settings$rho = 0
       settings$corstruct = "exchangeable"
@@ -130,7 +130,7 @@ res_list = list()
       res_list[[3]] = settings
       
       # Norm 5
-      settings = subset(samples2, grp = 5)
+      settings = subset(samples2, grp == 5)
       settings$type = "unweighted"
       settings$rho = runif(1, 0.05, 0.35)
       settings$corstruct = "exchangeable"
@@ -174,7 +174,7 @@ save(res_list, file = "results_t1_spec.RData")
 # Type-II Error -----------------------------------------------------------
    # Norm 1
    pow_list_norm = list()
-   settings = subset(samples, grp = 1)
+   settings = subset(samples, grp == 1)
    settings$type = "unweighted"
    settings$rho = runif(1, 0.35, 0.8)
    settings$corstruct = "exchangeable"
@@ -224,7 +224,7 @@ save(res_list, file = "results_t1_spec.RData")
    
    # Pois 5
    pow_list_pois = list()
-   settings = subset(samples2, grp = 5)
+   settings = subset(samples2, grp == 5)
    settings$type = "unweighted"
    settings$rho = runif(1, 0.05, 0.35)
    settings$corstruct = "exchangeable"
