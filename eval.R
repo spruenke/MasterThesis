@@ -18,10 +18,10 @@ date_code = format(Sys.Date(), "%d%m")
 res = c()
 for(i in 1:nrow(res_sets)){
 # grp 1, 2, 3, 4
-  load(paste0("Results/weighted_", res_sets[i,2], "_results.RData"))
+  load(paste0("Results/weighted_results_", res_sets[i,2], "_", date_code, ".RData"))
     A = list()
     for(j in 1:3){
-      dat = results[[j]]
+      dat = as.data.frame(results[[j]])
       dat_1 = subset(dat, grp == res_sets[i,1])
       val = c(dat_1$wald, dat_1$anv, dat_1$maxt)
       dat_11 = as.data.frame(rbind(dat_1[,c(1:3)], dat_1[,c(1:3)], dat_1[,c(1:3)]))
@@ -59,7 +59,7 @@ for(i in 1:nrow(res_sets)){
         scale_linetype_discrete(name = "Procedure") +
         labs(title ="Type-I Error of Hypothesis Tests with 5 samples", x = "Clustersize", y = "Type-I error")
       
-      p_dat_11 = ggarrange(p1, p2, p3, p4, ncol=2, nrow=2, common.legend = TRUE, legend="right") +
+      p_dat_11 = ggarrange(p1, p2, p3, p4, ncol=1, nrow=4, common.legend = TRUE, legend="top") +
         theme(axis.text.x = element_text(size = 14), axis.text.y = element_text(size = 14))
       A[[j]] = p_dat_11
       rm(p1, p2, p3, p4)
@@ -69,7 +69,7 @@ for(i in 1:nrow(res_sets)){
 names(res) = names_list
 
 for(k in 1:length(res)){
-  pdf(file = paste0("figures/weighted_", names_list[k], ".pdf"), width = 16, height = 9)
+  pdf(file = paste0("figures/weighted_", names_list[k], ".pdf"), width = 21, height = 29.7)
   print(res[[k]])
   dev.off()
 }
@@ -122,7 +122,7 @@ for(i in 1:nrow(res_sets)){
       labs(title ="Type-I Error of Hypothesis Tests with 5 samples", x = "Clustersize", y = "Type-I error") +
       theme(axis.text.x = element_text(size = 15), axis.text.y = element_text(size = 14), axis.title = element_text(size = 14))
     
-    p_dat_11 = ggarrange(p1, p2, p3, p4, ncol=2, nrow=2, common.legend = TRUE, legend="right")
+    p_dat_11 = ggarrange(p1, p2, p3, p4, ncol=1, nrow=4, common.legend = TRUE, legend="right")
     A[[j]] = p_dat_11
     rm(p1, p2, p3, p4)
   }
@@ -131,7 +131,7 @@ for(i in 1:nrow(res_sets)){
 names(res) = names_list
 
 for(k in 1:length(res)){
-  pdf(file = paste0("figures/unweighted_", names_list[k], ".pdf"), width = 16, height = 9)
+  pdf(file = paste0("figures/unweighted_", names_list[k], ".pdf"), width = 21, height = 29.7)
   print(res[[k]])
   dev.off()
 }
